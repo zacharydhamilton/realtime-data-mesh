@@ -4,8 +4,6 @@
 
 # <div align="center">Real-time Data Mesh</div>
 
-Introduction
-
 ## Prerequisites
 
 **Confluent**
@@ -146,3 +144,13 @@ With your new data product created, you can look into what was accomplished. The
 1. Expand the message, and you should see the new data product which contains a match between two Bike stations where the surplus inventory of one is great than or equal to the shortage inventory of the other. 
 1. Select "Explore Stream Lineage" in the top right hand corner of the screen when you're done viewing messages. 
 1. In this new view, you can see the consumption of the `stations.enriched` topic, the creation of new topics for high and low inventory, and the joining of them back together to perform the matching. 
+
+## Cleanup
+
+Since the resources you created have billing implications, it's a good idea to tear things down when you're done. The main things you'll want to teardown are Docker and everything Terraform built. 
+
+1. In the root directory of the repo, stop the containers with the following command. `docker compose down`
+1. Once the services have been stopped, navigate to the Terraform directory. `cd terraform/`
+1. Destroy everything with the following command. `terraform destroy -auto-approve`
+    * *If you run into any issues, you might need to import the business metadata you created by hand in order for Terraform to destroy it.*
+    * If for some reason the above doesn't work, you can always just delete the environment Terraform created named `realtime-data-mesh` and then reset its configuration in your local directory. 
