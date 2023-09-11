@@ -1,0 +1,63 @@
+---
+version: '3'
+services:
+  station-info-producer:
+    hostname: station-info-producer
+    container_name: station-info-producer
+    build:
+      context: .
+      dockerfile: ./ride4ever/Dockerfile
+    environment:
+      CONFIG_TYPE: FILE
+      CONFIG_FILE: "/usr/app/client.properties"
+    volumes:
+      - ./client.properties:/usr/app/client.properties
+    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.StationInformationProducer
+  station-status-producer:
+    hostname: station-status-producer
+    container_name: station-status-producer
+    build:
+      context: .
+      dockerfile: ./ride4ever/Dockerfile
+    environment:
+      CONFIG_TYPE: FILE
+      CONFIG_FILE: "/usr/app/client.properties"
+    volumes:
+      - ./client.properties:/usr/app/client.properties
+    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.StationStatusProducer
+  system-regions-producer:
+    hostname: system-regions-producer
+    container_name: system-regions-producer
+    build:
+      context: .
+      dockerfile: ./ride4ever/Dockerfile
+    environment:
+      CONFIG_TYPE: FILE
+      CONFIG_FILE: "/usr/app/client.properties"
+    volumes:
+      - ./client.properties:/usr/app/client.properties
+    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.SystemRegionsProducer
+  customer-info-producer:
+    hostname: customer-info-producer
+    container_name: customer-info-producer
+    build:
+      context: .
+      dockerfile: ./ride4ever/Dockerfile
+    environment:
+      CONFIG_TYPE: FILE
+      CONFIG_FILE: "/usr/app/client.properties"
+    volumes:
+      - ./client.properties:/usr/app/client.properties
+    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.CustomerInfoProducer
+  customer-demographics-producer:
+    hostname: customer-demographics-producer
+    container_name: customer-demographics-producer
+    build:
+      context: .
+      dockerfile: ./ride4ever/Dockerfile
+    environment:
+      CONFIG_TYPE: FILE
+      CONFIG_FILE: "/usr/app/client.properties"
+    volumes:
+      - ./client.properties:/usr/app/client.properties
+    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.CustomerDemographicProducer

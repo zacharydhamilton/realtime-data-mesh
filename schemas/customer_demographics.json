@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "customer_demographics",
+    "properties": {
+        "customer_id": {
+            "type": "string",
+            "description": "Unique identifier for the customer"
+        },
+        "age": {
+            "type": "integer",
+            "description": "Age of the customer"
+        },
+        "gender": {
+            "type": "string",
+            "enum": ["Male", "Female", "Other", "Prefer not to say"],
+            "description": "Gender of the customer"
+        },
+        "income": {
+            "type": "integer",
+            "description": "Annual income of the customer"
+        },
+        "education_level": {
+            "type": "string",
+            "enum": ["High School", "Some College", "Bachelor's", "Master's", "Doctorate"],
+            "description": "Highest level of education"
+        },
+        "marital_status": {
+            "type": "string",
+            "enum": ["Single", "Married", "Divorced", "Widowed"],
+            "description": "Marital status of the customer"
+        },
+        "ethnicity": {
+            "type": "string",
+            "description": "Ethnic background of the customer"
+        }
+    },
+    "required": ["customer_id", "age", "gender"]
+  }
+  
