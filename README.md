@@ -150,6 +150,7 @@ With your new data product created, you can look into what was accomplished. The
 Since the resources you created have billing implications, it's a good idea to tear things down when you're done. The main things you'll want to teardown are Docker and everything Terraform built. 
 
 1. In the root directory of the repo, stop the containers with the following command. `docker compose down`
+1. In the Confluent Cloud console, navigate to the `inventory.redistribution` topic and removed the "DataProduct" tag.
 1. Once the services have been stopped, navigate to the Terraform directory. `cd terraform/`
 1. Destroy everything with the following command. `terraform destroy -auto-approve`
     * *If you run into any issues, you might need to import the business metadata you created by hand in order for Terraform to destroy it.*

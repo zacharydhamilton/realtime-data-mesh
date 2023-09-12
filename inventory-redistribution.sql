@@ -137,8 +137,6 @@ CREATE OR REPLACE TABLE "inventory_redistribution"
   WHERE high.surplus >= low.shortage
   GROUP BY concat(high.station_id, '-', low.station_id);
 
-  -- ON high.KSQL_COL_0 = low.KSQL_COL_0
-
 -- -- Drop Everything
 -- DROP TABLE IF EXISTS "inventory_redistribution";
 -- DROP STREAM IF EXISTS "inventory_availability_low-keyed";

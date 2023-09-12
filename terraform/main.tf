@@ -575,6 +575,8 @@ resource "confluent_tag_binding" "stations_data_product" {
     tag_name = confluent_tag.data_product.name
     entity_name = "${confluent_schema_registry_cluster.main.id}:${confluent_kafka_cluster.main.id}:${confluent_kafka_topic.stations_encirched.topic_name}"
     entity_type = "kafka_topic"
+
+    depends_on = [ confluent_tag.data_product ]
 }
 resource "confluent_tag_binding" "customers_data_product" {
     schema_registry_cluster {
@@ -588,6 +590,8 @@ resource "confluent_tag_binding" "customers_data_product" {
     tag_name = confluent_tag.data_product.name
     entity_name = "${confluent_schema_registry_cluster.main.id}:${confluent_kafka_cluster.main.id}:${confluent_kafka_topic.customers_enriched.topic_name}"
     entity_type = "kafka_topic"
+
+    depends_on = [ confluent_tag.data_product ]
 }
 
 # PROPS FILE OUTPUT
