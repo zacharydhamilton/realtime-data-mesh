@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDb_v2_InfluxQL
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    user: admin
+    password: s3cur3p4ssw0rd!
+    database: stations   
+    jsonData:
+      httpHeaderName1: 'Authorization'
+    secureJsonData:
+      httpHeaderValue1: 'Token super-secret-auth-token'

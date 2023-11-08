@@ -1,4 +1,6 @@
 -----------------------------------------------------------------------------------
+SET 'auto.offset.reset' = 'earliest';
+
 CREATE OR REPLACE STREAM "customers_info" (
     customer_id STRING,
     first_name STRING,
@@ -58,3 +60,10 @@ CREATE OR REPLACE TABLE "customers_enriched"
     FROM "customers_info_latest" info
     JOIN "customers_demographics_latest" demo 
     ON info.pk = demo.pk;
+
+-- -- Drop Everything
+-- DROP TABLE IF EXISTS "customers_enriched";
+-- DROP TABLE IF EXISTS "customers_demographics_latest";
+-- DROP TABLE IF EXISTS "customers_info_latest";
+-- DROP STREAM IF EXISTS "customers_demographics";
+-- DROP STREAM IF EXISTS "customers_info";

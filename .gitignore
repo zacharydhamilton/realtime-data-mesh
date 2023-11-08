@@ -4,6 +4,9 @@
 **/*.tfstate*
 **/notes.file
 
+# Influxdb
+influxdb/telegraf/telegraf.conf
+
 # Java
 # Compiled bytecode files
 *.class

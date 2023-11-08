@@ -612,3 +612,11 @@ resource "local_file" "client_properties" {
     basic.auth.credentials.source=USER_INFO
     EOT
 }
+resource "local_file" "telegraf_conf" {
+    filename = "../influxdb/telegraf/telegraf.conf"
+    content = templatefile("../influxdb/telegraf/telegraf.tmpl", {
+        BOOTSTRAP_SERVERS = substr(confluent_kafka_cluster.main.bootstrap_endpoint,11,-1),
+        KAFKA_API_KEY = confluent_api_key.clients_kafka.id,
+        KAFKA_API_SECRET = confluent_api_key.clients_kafka.secret
+    })
+}

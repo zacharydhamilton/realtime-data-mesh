@@ -1,4 +1,6 @@
 -----------------------------------------------------------------------------------
+SET 'auto.offset.reset' = 'earliest';
+
 CREATE OR REPLACE STREAM "stations_info" (
   station_id STRING,
   name STRING,
@@ -126,7 +128,30 @@ CREATE OR REPLACE STREAM "stations_enriched"
   INNER JOIN "stations_info_latest" info
   ON status.station_id = info.station_id;
 
+CREATE OR REPLACE STREAM "stations_enriched_telegraf" WITH (kafka_topic='stations.enriched.telegraf', partitions=6, key_format='KAFKA', value_format='JSON')
+  AS SELECT
+    `station_id` `key`,
+    AS_VALUE(`station_id`) `station_id`,
+    `name`,
+    `short_name`, 
+    `region_id`, 
+    `region_name`, 
+    `lat`,
+    `lon`,
+    `is_installed`, 
+    `is_renting`, 
+    `is_returning`,
+    `capacity`,
+    `num_bikes_available`,
+    `num_bikes_disabled`,
+    `num_docks_available`,
+    `num_docks_disabled`,
+    `last_reported`
+  FROM "stations_enriched"
+  PARTITION BY `station_id`;
+
 -- -- Drop Everything
+-- DROP STREAM IF EXISTS "stations_enriched_telegraf";
 -- DROP STREAM IF EXISTS "stations_enriched";
 -- DROP STREAM IF EXISTS "stations_status";
 -- DROP TABLE IF EXISTS "stations_info_latest";

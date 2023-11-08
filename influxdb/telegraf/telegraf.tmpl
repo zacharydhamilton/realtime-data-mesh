@@ -1,0 +1,40 @@
+[agent]
+  interval = "10s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+  precision = ""
+  debug = false
+  quiet = false
+  logfile = ""
+  hostname = ""
+  omit_hostname = false
+
+[[inputs.kafka_consumer]]
+  version = "1.1.0"
+  brokers = ["${BOOTSTRAP_SERVERS}"]
+  sasl_username = "${KAFKA_API_KEY}"
+  sasl_password = "${KAFKA_API_SECRET}"
+  sasl_mechanism = "PLAIN"
+  sasl_version = 1
+  enable_tls = true
+  topics = ["stations.enriched.telegraf"]
+  client_id = "telegraf"
+  consumer_group = "telegraf"
+  offset = "newest"
+  # https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
+  data_format = "json"
+  name_override = "station_availability"
+  tag_keys = ["station_id", "name", "short_name", "region_id", "region_name", "lat", "lon", "is_installed", "is_renting", "is_returning"]
+  json_time_key = "last_reported"
+  json_time_format = "unix"
+
+[[outputs.influxdb_v2]]
+  urls = ["http://influxdb:8086"]
+  organization = "ride4ever"
+  bucket = "stations"
+  token = "super-secret-auth-token"
+  timeout = "5s"

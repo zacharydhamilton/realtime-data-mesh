@@ -61,3 +61,40 @@ services:
     volumes:
       - ./client.properties:/usr/app/client.properties
     command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.CustomerDemographicProducer
+  influxdb:
+    hostname: influxdb:2.7.3
+    container_name: influxdb
+    image: influxdb
+    environment: 
+      INFLUXD_REPORTING_DISABLED: true
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: s3cur3p4ssw0rd!
+      DOCKER_INFLUXDB_INIT_ORG: ride4ever
+      DOCKER_INFLUXDB_INIT_BUCKET: stations
+      DOCKER_INFLUXDB_INIT_RETENTION: 1w
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: super-secret-auth-token
+    ports: 
+      - "8086:8086"
+  telegraf:
+    hostname: telegraf 
+    container_name: telegraf
+    image: telegraf:1.28.3
+    volumes:
+      - ./influxdb/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    links:
+      - influxdb
+    depends_on:
+      - influxdb
+  grafana: 
+    hostname: grafana
+    container_name: grafana
+    image: grafana/grafana:10.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./influxdb/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./influxdb/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on: 
+      - influxdb
+  
