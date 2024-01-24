@@ -6,6 +6,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zacharydhamilton.objects.station_info.StationInformation;
@@ -13,6 +15,7 @@ import com.github.zacharydhamilton.objects.station_status.StationStatus;
 import com.github.zacharydhamilton.objects.system_regions.SystemRegions;
 
 public class HttpService {
+    private static final Logger logger = LogManager.getLogger(HttpService.class);
     static String station_information_url = "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json"; // "https://gbfs.citibikenyc.com/gbfs/en/station_information.json";
     static String station_status_url = "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json"; // "https://gbfs.citibikenyc.com/gbfs/en/station_status.json";
     static String system_regions_url = "https://gbfs.lyft.com/gbfs/2.3/bkn/en/system_regions.json";
@@ -32,7 +35,7 @@ public class HttpService {
                 }
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            logger.error(exception.getMessage(), exception);
         }
         return null;
     }
@@ -52,7 +55,7 @@ public class HttpService {
                 }
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            logger.error(exception.getMessage(), exception);
         }
         return null;
     }
@@ -72,7 +75,7 @@ public class HttpService {
                 }
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            logger.error(exception.getMessage(), exception);
         }
         return null;
     }

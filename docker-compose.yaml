@@ -12,7 +12,7 @@ services:
       CONFIG_FILE: "/usr/app/client.properties"
     volumes:
       - ./client.properties:/usr/app/client.properties
-    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.StationInformationProducer
+    command: java -cp /usr/app/ride4ever-1.0.2.jar com.github.zacharydhamilton.producer.StationInformationProducer
   station-status-producer:
     hostname: station-status-producer
     container_name: station-status-producer
@@ -24,7 +24,7 @@ services:
       CONFIG_FILE: "/usr/app/client.properties"
     volumes:
       - ./client.properties:/usr/app/client.properties
-    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.StationStatusProducer
+    command: java -cp /usr/app/ride4ever-1.0.2.jar com.github.zacharydhamilton.producer.StationStatusProducer
   system-regions-producer:
     hostname: system-regions-producer
     container_name: system-regions-producer
@@ -36,7 +36,7 @@ services:
       CONFIG_FILE: "/usr/app/client.properties"
     volumes:
       - ./client.properties:/usr/app/client.properties
-    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.SystemRegionsProducer
+    command: java -cp /usr/app/ride4ever-1.0.2.jar com.github.zacharydhamilton.producer.SystemRegionsProducer
   customer-info-producer:
     hostname: customer-info-producer
     container_name: customer-info-producer
@@ -48,7 +48,7 @@ services:
       CONFIG_FILE: "/usr/app/client.properties"
     volumes:
       - ./client.properties:/usr/app/client.properties
-    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.CustomerInfoProducer
+    command: java -cp /usr/app/ride4ever-1.0.2.jar com.github.zacharydhamilton.producer.CustomerInfoProducer
   customer-demographics-producer:
     hostname: customer-demographics-producer
     container_name: customer-demographics-producer
@@ -60,7 +60,7 @@ services:
       CONFIG_FILE: "/usr/app/client.properties"
     volumes:
       - ./client.properties:/usr/app/client.properties
-    command: java -cp /usr/app/ride4ever-1.0.0.jar com.github.zacharydhamilton.producer.CustomerDemographicProducer
+    command: java -cp /usr/app/ride4ever-1.0.2.jar com.github.zacharydhamilton.producer.CustomerDemographicProducer
   influxdb:
     hostname: influxdb:2.7.3
     container_name: influxdb

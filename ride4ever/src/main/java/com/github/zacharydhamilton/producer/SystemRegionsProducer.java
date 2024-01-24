@@ -16,14 +16,18 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.zacharydhamilton.gbfs.HttpService;
 import com.github.zacharydhamilton.objects.system_regions.Region;
 import com.github.zacharydhamilton.objects.system_regions.SystemRegions;
 
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializerConfig;
 
 public class SystemRegionsProducer {
+    private static final Logger logger = LogManager.getLogger(SystemRegionsProducer.class);
     static String configType = (System.getenv("CONFIG_TYPE") != null) ? System.getenv("CONFIG_TYPE") : "FILE"; 
     static String configFile = (System.getenv("CONFIG_FILE") != null) ? System.getenv("CONFIG_FILE") : "../client.properties";
     static String topic = "system.regions";
@@ -40,10 +44,11 @@ public class SystemRegionsProducer {
                             producer.send(record);
                         }
                         producer.flush();
+                        logger.info(String.format("Sending a bulk of systemRegion '%s' records", systemRegions.getData().getRegions().size()));
                     }
                     Thread.sleep(5*60*1000);
                 } catch (Exception exception) {
-                    exception.printStackTrace();
+                    logger.error(exception.getMessage(), exception);
                 }
             }
     }
@@ -58,6 +63,10 @@ public class SystemRegionsProducer {
             props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
             props.put(SaslConfigs.SASL_JAAS_CONFIG, System.getenv("SASL_JAAS_CONFIG"));
             props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+            props.put(KafkaJsonSchemaSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, System.getenv("SCHEMA_REGISTRY_URL"));
+            props.put(KafkaJsonSchemaSerializerConfig.USER_INFO_CONFIG, System.getenv("SCHEMA_REGISTRY_KEY")+":"+System.getenv("SCHEMA_REGISTRY_SECRET"));
+            props.put(KafkaJsonSchemaSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "USER_INFO");
+
         }
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaJsonSchemaSerializer.class.getName());
@@ -74,10 +83,10 @@ public class SystemRegionsProducer {
      * @throws ConfigException
      */
     private static void preInitChecks() throws ConfigException {
-        ArrayList<String> requiredProps = new ArrayList<String>(Arrays.asList("BOOTSTRAP_SERVERS", "SASL_JAAS_CONFIG", "METADATA_FILE"));
+        ArrayList<String> requiredProps = new ArrayList<String>(Arrays.asList("BOOTSTRAP_SERVERS", "SASL_JAAS_CONFIG", "SCHEMA_REGISTRY_URL", "SCHEMA_REGISTRY_KEY", "SCHEMA_REGISTRY_SECRET"));
         ArrayList<String> missingProps = new ArrayList<String>();
         for (String prop : requiredProps) {
-            if (System.getenv(prop).equals(null)) {
+            if (System.getenv(prop) == null) {
                 missingProps.add(prop);
             }
         }

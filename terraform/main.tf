@@ -268,6 +268,17 @@ resource "confluent_kafka_topic" "stations_info" {
         id = confluent_kafka_cluster.main.id
     }
 }
+resource "confluent_kafka_topic" "stations_info_neighborhoods"  {
+    topic_name = "stations.info.neighborhoods"
+    rest_endpoint = confluent_kafka_cluster.main.rest_endpoint
+    credentials {
+        key = confluent_api_key.app_manager_kafka.id
+        secret = confluent_api_key.app_manager_kafka.secret
+    }
+    kafka_cluster {
+        id = confluent_kafka_cluster.main.id
+    }
+}
 resource "confluent_kafka_topic" "stations_encirched" {
     topic_name = "stations.enriched"
     rest_endpoint = confluent_kafka_cluster.main.rest_endpoint

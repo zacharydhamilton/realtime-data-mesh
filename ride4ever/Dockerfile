@@ -5,6 +5,6 @@ COPY ride4ever/pom.xml /usr/src/app
 RUN mvn -f /usr/src/app/pom.xml clean package
 
 FROM openjdk:17.0.2-jdk-slim
-COPY --from=builder /usr/src/app/target/ride4ever-1.0.0.jar /usr/app/ride4ever-1.0.0.jar
+COPY --from=builder /usr/src/app/target/ride4ever-1.0.2.jar /usr/app/ride4ever-1.0.2.jar
 
-CMD ["java", "-cp", "/usr/app/ride4ever-1.0.0.jar", "com.github.zacharydhamilton.producer.StationInformationProducer"]
+CMD ["java", "-cp", "/usr/app/ride4ever-1.0.2.jar", "com.github.zacharydhamilton.App"]

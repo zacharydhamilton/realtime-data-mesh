@@ -20,6 +20,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.config.ConfigException;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.github.zacharydhamilton.objects.CustomerDemographics;
 import com.github.zacharydhamilton.objects.CustomerInfo;
@@ -32,8 +34,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializerConfig;
 
 public class CustomerDemographicProducer {
+    private static final Logger logger = LogManager.getLogger(CustomerDemographicProducer.class);
     static String configType = (System.getenv("CONFIG_TYPE") != null) ? System.getenv("CONFIG_TYPE") : "FILE"; 
     static String configFile = (System.getenv("CONFIG_FILE") != null) ? System.getenv("CONFIG_FILE") : "../client.properties";
     static String topic = "customers.demographics";
@@ -42,6 +46,7 @@ public class CustomerDemographicProducer {
     public static void main(String[] args) throws IOException, NullPointerException {
         KafkaProducer<String, CustomerDemographics> producer = createProducer();
         ArrayList<CustomerDemographics> demographics = new ArrayList<>();
+        logger.info(String.format("Attempting to seed topics with existing dataset of customerDemographics from file."));
         try (Reader reader = new InputStreamReader(CustomerDemographicProducer.class.getClassLoader().getResourceAsStream("demographics.json"))) {
             JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
             Gson gson = new Gson();
@@ -52,9 +57,11 @@ public class CustomerDemographicProducer {
                 producer.send(record);
             }
             producer.flush();
+            logger.info(String.format("Seeded the customerDemographics topic with '%s' records.", jsonArray.size()));
         } catch (Exception exception) {
-            exception.printStackTrace();
+            logger.error(exception.getMessage(), exception);
         }
+        logger.info(String.format("Beginning ongoing customerDemographic loop."));
         while (true) {
             try {
                 Random random = new Random();
@@ -69,9 +76,10 @@ public class CustomerDemographicProducer {
                 ProducerRecord<String, CustomerDemographics> record = new ProducerRecord<String, CustomerDemographics>(topic, demographic.getCustomerId(), demographic);
                 producer.send(record);
                 producer.flush();
+                logger.info(String.format("Updated customerDemographic with customerId '%s'.", demographic.getCustomerId()));
                 Thread.sleep(5*1000);
             } catch (Exception exception) {
-                exception.printStackTrace();
+                logger.error(exception.getMessage(), exception);
             }
         }
     }
@@ -86,6 +94,9 @@ public class CustomerDemographicProducer {
             props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
             props.put(SaslConfigs.SASL_JAAS_CONFIG, System.getenv("SASL_JAAS_CONFIG"));
             props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+            props.put(KafkaJsonSchemaSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, System.getenv("SCHEMA_REGISTRY_URL"));
+            props.put(KafkaJsonSchemaSerializerConfig.USER_INFO_CONFIG, System.getenv("SCHEMA_REGISTRY_KEY")+":"+System.getenv("SCHEMA_REGISTRY_SECRET"));
+            props.put(KafkaJsonSchemaSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "USER_INFO");
         }
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaJsonSchemaSerializer.class.getName());
@@ -163,10 +174,10 @@ public class CustomerDemographicProducer {
      * @throws ConfigException
      */
     private static void preInitChecks() throws ConfigException {
-        ArrayList<String> requiredProps = new ArrayList<String>(Arrays.asList("BOOTSTRAP_SERVERS", "SASL_JAAS_CONFIG", "METADATA_FILE"));
+        ArrayList<String> requiredProps = new ArrayList<String>(Arrays.asList("BOOTSTRAP_SERVERS", "SASL_JAAS_CONFIG", "SCHEMA_REGISTRY_URL", "SCHEMA_REGISTRY_KEY", "SCHEMA_REGISTRY_SECRET"));
         ArrayList<String> missingProps = new ArrayList<String>();
         for (String prop : requiredProps) {
-            if (System.getenv(prop).equals(null)) {
+            if (System.getenv(prop) == null) {
                 missingProps.add(prop);
             }
         }

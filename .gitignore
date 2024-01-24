@@ -3,6 +3,7 @@
 **/.terraform*
 **/*.tfstate*
 **/notes.file
+**/.vscode/
 
 # Influxdb
 influxdb/telegraf/telegraf.conf

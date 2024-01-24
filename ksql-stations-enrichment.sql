@@ -88,6 +88,31 @@ CREATE OR REPLACE STREAM "stations_status" (
   >>
 ) WITH (kafka_topic='stations.status', partitions=6, key_format='KAFKA', value_format='JSON_SR');
 
+CREATE OR REPLACE STREAM "stations_info_neighborhoods" (
+  station_key STRING KEY,
+  region_id STRING,
+  station_id STRING, 
+  zone STRING, 
+  neighborhood STRING,
+  area_sq_ft STRING,
+  centroid STRUCT<
+    lat STRING,
+    lon STRING
+  > 
+) WITH (kafka_topic='stations.info.neighborhoods', partitions=6, key_format='KAFKA', value_format='JSON_SR');
+
+CREATE TABLE "stations_info_neighborhoods_latest" 
+  WITH (kafka_topic='stations.info.neighborhoods.latest', partitions=6, key_format='KAFKA', value_format='JSON_SR')
+  AS SELECT 
+    station_id AS station_id,
+    LATEST_BY_OFFSET(region_id) AS region_id,
+    LATEST_BY_OFFSET(zone) AS zone,
+    LATEST_BY_OFFSET(neighborhood) AS neighborhood,
+    LATEST_BY_OFFSET(area_sq_ft) AS area_sq_ft,
+    LATEST_BY_OFFSET(centroid) AS centroid
+  FROM "stations_info_neighborhoods"
+  GROUP BY station_id;
+
 CREATE OR REPLACE STREAM "stations_enriched"
   WITH (kafka_topic='stations.enriched', partitions=6, key_format='KAFKA', value_format='JSON_SR')
   AS SELECT 
@@ -123,12 +148,19 @@ CREATE OR REPLACE STREAM "stations_enriched"
     status.is_renting `is_renting`,
     status.is_returning `is_returning`,
     status.last_reported `last_reported`,
-    status.vehicle_docks_available `vehicle_docks_available`
+    status.vehicle_docks_available `vehicle_docks_available`,
+    neighborhoods.zone `zone`,
+    neighborhoods.neighborhood `neighborhood`,
+    neighborhoods.area_sq_ft `area_sq_ft`,
+    STRUCT(`lat` := neighborhoods.centroid->lat, 
+           `lon` := neighborhoods.centroid->lon
+    ) `centroid`
   FROM "stations_status" status 
-  INNER JOIN "stations_info_latest" info
-  ON status.station_id = info.station_id;
+  INNER JOIN "stations_info_latest" info ON status.station_id = info.station_id
+  INNER JOIN "stations_info_neighborhoods_latest" neighborhoods ON status.station_id = neighborhoods.station_id;
 
-CREATE OR REPLACE STREAM "stations_enriched_telegraf" WITH (kafka_topic='stations.enriched.telegraf', partitions=6, key_format='KAFKA', value_format='JSON')
+CREATE OR REPLACE STREAM "stations_enriched_telegraf" 
+  WITH (kafka_topic='stations.enriched.telegraf', partitions=6, key_format='KAFKA', value_format='JSON')
   AS SELECT
     `station_id` `key`,
     AS_VALUE(`station_id`) `station_id`,

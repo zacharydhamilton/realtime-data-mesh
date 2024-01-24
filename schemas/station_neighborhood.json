@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "station_neighborhood",
+  "properties": {
+    "region_id": {
+      "type": "string",
+      "description": "Identifier of the region where the station is located."
+    },
+    "station_id": {
+      "type": "string",
+      "description": "Unique identifier for the station."
+    },
+    "zone": {
+      "type": "string",
+      "description": "The larger area within a city that encompasses a collection of neighborhoods."
+    },
+    "neighborhood": {
+      "type": "string",
+      "description": "The specific neighborhood within the zone."
+    },
+    "area_sq_ft": {
+      "type": "string",
+      "description": "The area of the neighborhood in square feet."
+    },
+    "centroid": {
+      "type": "object",
+      "description": "The geometric center of the neighborhood.",
+      "properties": {
+        "lat": {
+          "type": "string",
+          "description": "The latitude of the centroid."
+        },
+        "lon": {
+          "type": "string",
+          "description": "The longitude of the centroid."
+        }
+      },
+      "required": ["lat", "lon"]
+    }
+  },
+  "required": ["station_id", "zone", "neighborhood", "area_sq_ft", "centroid"]
+}
